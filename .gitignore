@@ -7,8 +7,8 @@
 libfranka
 franka_description
 franka_ros2
-crisp_controllers
-crisp_controllers_demos
-crisp_py
+build
+install
+log
 .env
 __pycache__
