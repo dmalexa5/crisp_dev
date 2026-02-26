@@ -10,4 +10,5 @@
     "C_Cpp.errorSquiggles": "enabled",
     "cmake.configureOnOpen": false,
     "cmake.ignoreCMakeListsMissing": true,
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
 }
