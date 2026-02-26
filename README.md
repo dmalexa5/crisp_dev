@@ -1,8 +1,5 @@
 ## Setup
 
-
-### Option A: using Docker Compose (recommended)
-
 You must have **docker engine** installed, **_not_** docker desktop. This will interfere with the container inheriting the `PREEMPT_RT` kernel neccessary to drive franka manipulators.
 
   1. **Save the current user id into a file:**
@@ -27,44 +24,30 @@ You must have **docker engine** installed, **_not_** docker desktop. This will i
       `Ctrl + Shift + P` > `Dev Containers: Attach to Running Container`
   5. **Clone the latests dependencies:**
       ```bash
-      cd /ros2_ws
-      vcs import src < src/dependency.repos --recursive --skip-existing
+      cd /ros2_ws && mkdir src
+      vcs import src < dependency.repos --recursive --skip-existing
       ```
-  6. **Build the workspace:**
-    > [!NOTE]
-    > This project is in rapid development. Warnings are expected, especially during the first build.
+  6. **Update bashrc aliases (optional)**
+      ```bash
+      echo 'alias cb="colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"' >> ~/.bashrc
+      echo 'alias cdb="colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"' >> ~/.bashrc
+      echo 'alias s="source install/setup.bash"' >> ~/.bashrc
+      ```
+  7. **Build the workspace:**
 
       ```bash
-      colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+      colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       ```
+      or, if you set up aliases, `cb`
+> ![NOTE]
+> This project is in rapid development. Warnings are expected, especially during the first build.
+
   7. **Source the built workspace:**
       ```bash
       source install/setup.bash
       ```
+      or `s`
 
-### Option B: using Dev Containers in Visual Studio Code
-
-  2. **Open Visual Studio Code ...**
-
-        Then, open folder  `crisp_contact_decomposition`
-
-  3. **Choose `Reopen in container` when prompted.**
-
-      The container will be built automatically, as required.
-
-  4. **Clone the latests dependencies:**
-      ```bash
-      vcs import src < src/dependency.repos --recursive --skip-existing
-      ```
-
-  5. **Open a terminal and build the workspace:**
-      ```bash
-      colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
-      ```
-  6. **Source the built workspace environment:**
-      ```bash
-      source install/setup.bash
-      ```
 
 ## Python environement setup
 
