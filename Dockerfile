@@ -1,6 +1,12 @@
 # Start with an official ROS 2 base image for the desired distribution
 FROM ros:humble-ros-base
 
+# TEMP: Switch mirror
+RUN sed -i \
+      -e 's|http://archive.ubuntu.com/ubuntu|http://mirrors.edge.kernel.org/ubuntu|g' \
+      -e 's|http://security.ubuntu.com/ubuntu|http://mirrors.edge.kernel.org/ubuntu|g' \
+      /etc/apt/sources.list
+
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
