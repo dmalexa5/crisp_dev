@@ -18,7 +18,7 @@ You must have **docker engine** installed, **_not_** docker desktop. This will i
       ```
   4. **Open a shell inside the container:**
       ```bash
-      docker exec -it crisp_contact_decomposition /bin/bash
+      docker exec -it crisp_dev /bin/bash
       ```
       or
       `Ctrl + Shift + P` > `Dev Containers: Attach to Running Container`
@@ -29,8 +29,8 @@ You must have **docker engine** installed, **_not_** docker desktop. This will i
       ```
   6. **Update bashrc aliases (optional)**
       ```bash
-      echo 'alias cb="colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"' >> ~/.bashrc
-      echo 'alias cdb="colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"' >> ~/.bashrc
+      echo 'alias cb="colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=OFF"' >> ~/.bashrc
+      echo 'alias cdb="colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON DBUILD_TESTING=OFF"' >> ~/.bashrc
       echo 'alias s="source install/setup.bash"' >> ~/.bashrc
       ```
   7. **Build the workspace:**
