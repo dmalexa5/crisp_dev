@@ -38,14 +38,14 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install MuJoCo
-RUN mkdir -p /opt/mujoco \
-    && wget https://github.com/google-deepmind/mujoco/releases/download/${MUJOCO_VERSION}/mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz \
-    && tar -xzf mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz -C /opt/mujoco \
-    && rm mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz
+# # Install MuJoCo (not needed right now: will refactor into a different simulation container)
+# RUN mkdir -p /opt/mujoco \
+#     && wget https://github.com/google-deepmind/mujoco/releases/download/${MUJOCO_VERSION}/mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz \
+#     && tar -xzf mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz -C /opt/mujoco \
+#     && rm mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz
 
-ENV MUJOCO_DIR=/opt/mujoco/mujoco-${MUJOCO_VERSION}
-ENV MUJOCO_VERSION=${MUJOCO_VERSION}
+# ENV MUJOCO_DIR=/opt/mujoco/mujoco-${MUJOCO_VERSION}
+# ENV MUJOCO_VERSION=${MUJOCO_VERSION}
 
 # Setup user configuration
 RUN groupadd --gid $USER_GID $USERNAME \
@@ -104,7 +104,7 @@ RUN python3 -m venv /ros2_ws/.venv --system-site-packages \
 COPY --chown=$USERNAME:$USERNAME . /ros2_ws
 RUN mkdir -p /ros2_ws/src \
     && sudo chown -R $USERNAME:$USERNAME /ros2_ws \
-    && vcs import src < dependency.repos --recursive --skip-existing \
+    && git submodule update --init --recursive \
     && sudo apt-get update \
     && rosdep update \
     && rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y \
@@ -117,5 +117,4 @@ RUN sudo chmod +x /entrypoint.sh
 
 # Set the default shell to bash and the workdir to the source directory
 SHELL [ "/bin/bash", "-c" ]
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "/bin/bash" ]
+CMD [ "bash" ]

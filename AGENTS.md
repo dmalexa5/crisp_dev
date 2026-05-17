@@ -1,10 +1,10 @@
-## Scope
+# Scope
 
 This repo is a ROS 2 Humble workspace, and contains low-level ROS 2 / `ros2_control` functionality intended to run inside a Docker container.
 
 Prioritize correctness, hardware safety, real-time safety, and small, reviewable changes.
 
-# Environment
+## Environment
 
 Before running any commands, source the environment using `scripts/ros_env.sh`.
 
@@ -62,4 +62,3 @@ ros2 launch <package> <launch_file> --show-args
 ros2 pkg prefix <package>
 ros2 interface show <interface>
 ```
-
