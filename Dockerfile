@@ -1,12 +1,6 @@
 # Start with an official ROS 2 base image for the desired distribution
 FROM ros:humble-ros-base
 
-# TEMP: Switch mirror
-RUN sed -i \
-      -e 's|http://archive.ubuntu.com/ubuntu|http://mirrors.edge.kernel.org/ubuntu|g' \
-      -e 's|http://security.ubuntu.com/ubuntu|http://mirrors.edge.kernel.org/ubuntu|g' \
-      /etc/apt/sources.list
-
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
@@ -16,7 +10,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
 ARG USER_UID=1001
 ARG USER_GID=1001
 ARG USERNAME=user
-ARG MUJOCO_VERSION=3.2.6
 
 # Install essential packages and ROS development tools
 RUN apt-get update && \
@@ -89,16 +82,13 @@ RUN sudo apt-get update \
         ros-humble-teleop-twist-keyboard \
         ros-humble-joy \
         ros-humble-teleop-twist-joy \
+        ros-humble-foxglove-bridge \
+        ros-humble-rmw-cyclonedds-cpp \
 
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
 WORKDIR /ros2_ws
-
-# Create the python virtual environment
-RUN python3 -m venv /ros2_ws/.venv --system-site-packages \
-    && /ros2_ws/.venv/bin/pip install --upgrade pip \
-    && touch /ros2_ws/.venv/COLCON_IGNORE
 
 # Install the missing ROS 2 dependencies
 COPY --chown=$USERNAME:$USERNAME . /ros2_ws
@@ -111,9 +101,6 @@ RUN mkdir -p /ros2_ws/src \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/* \
     && rm -rf /home/$USERNAME/.ros
-
-COPY ./entrypoint.sh /entrypoint.sh
-RUN sudo chmod +x /entrypoint.sh
 
 # Set the default shell to bash and the workdir to the source directory
 SHELL [ "/bin/bash", "-c" ]
