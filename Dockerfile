@@ -28,6 +28,7 @@ RUN apt-get update && \
         vim \
         libglfw3-dev \
         wget \
+        ripgrep \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

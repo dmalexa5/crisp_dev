@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Must bash source this file
 source /opt/ros/humble/setup.bash
 
 cd /ros2_ws
