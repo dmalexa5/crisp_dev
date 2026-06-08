@@ -48,8 +48,8 @@ ENV MUJOCO_DIR=/opt/mujoco/mujoco-${MUJOCO_VERSION}
 ENV MUJOCO_VERSION=${MUJOCO_VERSION}
 
 # Setup user configuration
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+RUN if ! getent group "$USER_GID" > /dev/null; then groupadd --gid "$USER_GID" "$USERNAME"; fi \
+    && useradd --uid "$USER_UID" --gid "$USER_GID" -m "$USERNAME" \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /home/$USERNAME/.bashrc \
     && echo "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash" >> /home/$USERNAME/.bashrc
@@ -89,7 +89,6 @@ RUN sudo apt-get update \
         ros-humble-teleop-twist-keyboard \
         ros-humble-joy \
         ros-humble-teleop-twist-joy \
-
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
@@ -101,9 +100,9 @@ RUN python3 -m venv /ros2_ws/.venv --system-site-packages \
     && touch /ros2_ws/.venv/COLCON_IGNORE
 
 # Install the missing ROS 2 dependencies
-COPY --chown=$USERNAME:$USERNAME . /ros2_ws
+COPY --chown=$USER_UID:$USER_GID . /ros2_ws
 RUN mkdir -p /ros2_ws/src \
-    && sudo chown -R $USERNAME:$USERNAME /ros2_ws \
+    && sudo chown -R "$USER_UID:$USER_GID" /ros2_ws \
     && vcs import src < dependency.repos --recursive --skip-existing \
     && sudo apt-get update \
     && rosdep update \
@@ -112,10 +111,7 @@ RUN mkdir -p /ros2_ws/src \
     && sudo rm -rf /var/lib/apt/lists/* \
     && rm -rf /home/$USERNAME/.ros
 
-COPY ./entrypoint.sh /entrypoint.sh
-RUN sudo chmod +x /entrypoint.sh
-
 # Set the default shell to bash and the workdir to the source directory
 SHELL [ "/bin/bash", "-c" ]
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "/ros_entrypoint.sh" ]
 CMD [ "/bin/bash" ]
