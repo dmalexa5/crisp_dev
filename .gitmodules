@@ -14,6 +14,8 @@
 [submodule "src/crisp_controllers"]
     path = src/crisp_controllers
     url = https://github.com/dmalexa5/crisp_controllers.git
+	branch = devel
 [submodule "src/crisp_controllers_demos"]
     path = src/crisp_controllers_demos
     url = https://github.com/dmalexa5/crisp_controllers_demos.git
+	branch = devel

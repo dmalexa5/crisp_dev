@@ -1,5 +1,5 @@
 # Start with an official ROS 2 base image for the desired distribution
-FROM ros:humble-ros-base
+FROM ros:humble-ros-base AS mujoco_base
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -10,6 +10,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
 ARG USER_UID=1001
 ARG USER_GID=1001
 ARG USERNAME=user
+ARG MUJOCO_VERSION=3.2.6
+
+ENV MUJOCO_VERSION=${MUJOCO_VERSION}
 
 # Install essential packages and ROS development tools
 RUN apt-get update && \
@@ -32,23 +35,42 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# # Install MuJoCo (not needed right now: will refactor into a different simulation container)
-# RUN mkdir -p /opt/mujoco \
-#     && wget https://github.com/google-deepmind/mujoco/releases/download/${MUJOCO_VERSION}/mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz \
-#     && tar -xzf mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz -C /opt/mujoco \
-#     && rm mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz
-
-# ENV MUJOCO_DIR=/opt/mujoco/mujoco-${MUJOCO_VERSION}
-# ENV MUJOCO_VERSION=${MUJOCO_VERSION}
-
 # Setup user configuration
-RUN groupadd --gid $USER_GID $USERNAME \
+RUN if ! getent group "$USER_GID" > /dev/null; then groupadd --gid "$USER_GID" "$USERNAME"; fi \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /home/$USERNAME/.bashrc \
     && echo "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash" >> /home/$USERNAME/.bashrc
 
 USER $USERNAME
+
+# Install MuJoCo
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+        amd64) mujoco_arch="linux-x86_64" ;; \
+        arm64) mujoco_arch="linux-aarch64" ;; \
+        *) echo "Unsupported architecture for MuJoCo: $arch" >&2; exit 1 ;; \
+    esac; \
+    wget "https://github.com/google-deepmind/mujoco/releases/download/${MUJOCO_VERSION}/mujoco-${MUJOCO_VERSION}-${mujoco_arch}.tar.gz" -O "$HOME/mujoco-${MUJOCO_VERSION}.tar.gz"; \
+    tar -xzf "$HOME/mujoco-${MUJOCO_VERSION}.tar.gz" -C "$HOME"; \
+    rm "$HOME/mujoco-${MUJOCO_VERSION}.tar.gz"
+
+FROM mujoco_base AS crisp_dev
+
+ARG USER_UID=1001
+ARG USER_GID=1001
+ARG USERNAME=user
+
+# Use OSRF's Gazebo packages for Ignition Fortress dependency versions
+# (Hack fix for ARM64 builds)
+RUN set -eux; \
+    curl -fsSL https://packages.osrfoundation.org/gazebo.gpg -o /tmp/gazebo.gpg; \
+    sudo install -D -m 0644 /tmp/gazebo.gpg /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg; \
+    rm /tmp/gazebo.gpg; \
+    . /etc/os-release; \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable ${VERSION_CODENAME} main" \
+        | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
 
 # Install some ROS 2 dependencies to create a cache layer
 RUN sudo apt-get update \
@@ -85,16 +107,15 @@ RUN sudo apt-get update \
         ros-humble-teleop-twist-joy \
         ros-humble-foxglove-bridge \
         ros-humble-rmw-cyclonedds-cpp \
-
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
 WORKDIR /ros2_ws
 
 # Install the missing ROS 2 dependencies
-COPY --chown=$USERNAME:$USERNAME . /ros2_ws
+COPY --chown=$USER_UID:$USER_GID . /ros2_ws
 RUN mkdir -p /ros2_ws/src \
-    && sudo chown -R $USERNAME:$USERNAME /ros2_ws \
+    && sudo chown -R $USER_UID:$USER_GID /ros2_ws \
     && git submodule update --init --recursive \
     && sudo apt-get update \
     && rosdep update \

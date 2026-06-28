@@ -6,10 +6,6 @@ Prioritize correctness, hardware safety, real-time safety, and small, reviewable
 
 ## Environment
 
-Before running any commands, source the environment using `scripts/ros_env.sh`.
-
-When neccessary, check the environment using `scripts/echo_ros_env.sh`.
-
 If a missing dependency is an apt/ROS system dependency, check that the environment is sourced, then update the Dockerfile or rosdep file. Do not pip-install ROS packages.
 
 ## Editing Rules
