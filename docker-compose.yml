@@ -21,6 +21,9 @@ services:
     environment:
       QT_X11_NO_MITSHM: 1
       DISPLAY: $DISPLAY
+      # No GPU driver in the container: Mesa falls back to nouveau and rviz2
+      # segfaults on dri3 screen creation. Force software rendering.
+      LIBGL_ALWAYS_SOFTWARE: 1
     cap_add:
       - SYS_NICE
     ulimits:
