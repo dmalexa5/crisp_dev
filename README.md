@@ -22,10 +22,12 @@ You must have **docker engine** installed, **_not_** docker desktop. This will i
       ```
       or
       `Ctrl + Shift + P` > `Dev Containers: Attach to Running Container`
-  5. **Clone the latests dependencies:**
+  5. **Check out the dependencies:**
+      All packages under `src/` are git submodules. Run this on the host before step 2, or inside
+      the container (the repo is bind-mounted, so it has the same effect):
       ```bash
-      cd /ros2_ws && mkdir src
-      vcs import src < dependency.repos --recursive --skip-existing
+      cd /ros2_ws
+      git submodule update --init --recursive
       ```
   6. **Update bashrc aliases (optional)**
       ```bash
@@ -81,14 +83,14 @@ This demonstration is a direct application of the CRISP OSC controller and a goo
       ```bash
       cd /ros2_ws/ && source install/setup.bash
       export ROBOT_IP=<your robot ip address>
-      ros2 launch contact_decomp_demos franka.launch.py robot_ip:=$ROBOT_IP & ros2 launch franka_gripper gripper.launch.py robot_ip:=$ROBOT_IP
+      ros2 launch crisp_controllers_robot_demos franka.launch.py robot_ip:=$ROBOT_IP & ros2 launch franka_gripper gripper.launch.py robot_ip:=$ROBOT_IP
       ```
       In the future, these will likely be launched from the same file.
     
   3. **Run the operational space control demo**
       In the original terminal (with .venv activated), run the demo.
       ```bash
-      cd /ros2_ws/src/contact_decomp_demos/examples/
+      cd /ros2_ws/src/crisp_py/examples/
       python3 01_figure_eight_osc.py
       ```
 [def]: #docker-container-installation
