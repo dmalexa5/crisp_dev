@@ -110,7 +110,7 @@ RUN sudo apt-get update \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
-# Build and install the Pinocchio and qpOASES C++ library.
+# Build and install the Pinocchio, qpOASES, NLOPT C++ library.
 ARG QPOASES_VERSION=3.2.2
 
 RUN sudo apt-get update \
@@ -118,6 +118,8 @@ RUN sudo apt-get update \
         build-essential \
         cmake \
         ros-humble-pinocchio \
+        libnlopt-dev \
+        libnlopt-cxx-dev \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 

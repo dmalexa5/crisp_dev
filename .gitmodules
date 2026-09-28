@@ -1,9 +1,12 @@
 [submodule "src/franka_description"]
 	path = src/franka_description
-	url = https://github.com/dmalexa5/franka_description.git
+	# url = https://github.com/dmalexa5/franka_description.git
+	url = https://github.com/frankarobotics/franka_description.git
 [submodule "src/franka_ros2"]
 	path = src/franka_ros2
-	url = https://github.com/dmalexa5/franka_ros2.git
+	# url = https://github.com/dmalexa5/franka_ros2.git
+	url = https://github.com/frankarobotics/franka_ros2.git
+	branch = humble
 [submodule "src/libfranka"]
 	path = src/libfranka
 	url = https://github.com/frankarobotics/libfranka.git
@@ -14,8 +17,20 @@
 [submodule "src/crisp_controllers"]
     path = src/crisp_controllers
     url = https://github.com/dmalexa5/crisp_controllers.git
-	branch = devel
+	branch = feat/optimization_operational_ctrl
 [submodule "src/crisp_controllers_demos"]
     path = src/crisp_controllers_demos
     url = https://github.com/dmalexa5/crisp_controllers_demos.git
 	branch = devel
+[submodule "src/prismatic_fr3_duo_description"]
+	path = src/prismatic_fr3_duo_description
+	url = https://github.com/Hier-Lab/prismatic_fr3_duo_description.git
+    branch = main
+[submodule "src/prismatic_fr3_duo_moveit_config"]
+    path = src/prismatic_fr3_duo_moveit_config
+    url = https://github.com/Hier-Lab/prismatic_fr3_duo_moveit_config.git
+    branch = main
+[submodule "src/wbdopt_ik"]
+	path = src/wbdopt_ik
+	url = https://github.com/Hier-Lab/wbdopt_ik.git
+	branch = main
