@@ -110,6 +110,30 @@ RUN sudo apt-get update \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
+# Build and install the Pinocchio and qpOASES C++ library.
+ARG QPOASES_VERSION=3.2.2
+
+RUN sudo apt-get update \
+    && sudo apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        ros-humble-pinocchio \
+    && sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+    git clone --branch "releases/${QPOASES_VERSION}" --depth 1 \
+        https://github.com/coin-or/qpOASES.git /tmp/qpOASES; \
+    cmake -S /tmp/qpOASES -B /tmp/qpOASES/build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DBUILD_SHARED_LIBS=ON \
+        -DQPOASES_BUILD_EXAMPLES=OFF; \
+    cmake --build /tmp/qpOASES/build --parallel; \
+    sudo cmake --install /tmp/qpOASES/build; \
+    sudo ldconfig; \
+    rm -rf /tmp/qpOASES
+
 WORKDIR /ros2_ws
 
 # Install the missing ROS 2 dependencies
