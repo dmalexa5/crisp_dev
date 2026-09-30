@@ -100,6 +100,9 @@ RUN sudo apt-get update \
         ros-humble-moveit-ros-visualization \
         ros-humble-joint-trajectory-controller \
         ros-humble-moveit-simple-controller-manager \
+        ros-humble-moveit-configs-utils \
+        ros-humble-moveit-planners \
+        ros-humble-gripper-controllers \
         ros-humble-rviz2 \
         ros-humble-xacro \
         ros-humble-teleop-twist-keyboard \
