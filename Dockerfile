@@ -139,6 +139,15 @@ RUN set -eux; \
     sudo ldconfig; \
     rm -rf /tmp/qpOASES
 
+# Python deps for franka_gello_state_publisher, and serial (/dev/ttyUSB*) access
+# for the Dynamixel servos via the dialout group.
+RUN sudo apt-get update \
+    && sudo apt-get install -y --no-install-recommends python3-pip \
+    && sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/* \
+    && pip3 install --user --no-cache-dir dynamixel_sdk tyro \
+    && sudo usermod -aG dialout $USERNAME
+
 WORKDIR /ros2_ws
 
 # Install the missing ROS 2 dependencies
